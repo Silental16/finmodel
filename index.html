@@ -71,13 +71,12 @@
             <div>
                 <h3>3.3. Дополнительно</h3>
                 <div class="toggle-field">
-                    <label>Расчёт NPV</label>
+                    <label id="discountRateContainer" style="display:none;">Ставка дисконтирования (%) <input type="number" id="discountRate" name="discountRate"></label>
                     <label class="switch">
                         <input type="checkbox" id="npvEnabled">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <label id="discountRateContainer" style="display:none;">Ставка дисконтирования (%) <input type="number" id="discountRate" name="discountRate"></label>
                 <div class="toggle-field">
                     <label>Расчёт IRR</label>
                     <label class="switch">
@@ -88,9 +87,8 @@
             </div>
 
             <div id="demandMultiplier">
-                <h3>3.4. Повышенный спрос (помесячно)</h3>
                 <div class="toggle-field">
-                    <label>Включить</label>
+                    <h3>3.4. Повышенный спрос (помесячно)</h3>
                     <label class="switch">
                         <input type="checkbox" id="demandEnabled">
                         <span class="slider"></span>
