@@ -1,11 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Page</title>
+    <title>FinModel</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hello World</h1>
+    <h1>Исходные данные для расчётов</h1>
+    <form id="finance-form">
+        <section>
+            <h2>1. Дата входа в проект</h2>
+            <input type="date" id="projectStart" name="projectStart">
+        </section>
+
+        <section>
+            <h2>2. Параметры юнита</h2>
+            <label>Площадь <input type="number" id="unitArea" name="unitArea"></label>
+            <label>Стоимость <input type="number" id="unitCost" name="unitCost"></label>
+            <label>ADR (сут. плата) <input type="number" id="unitAdr" name="unitAdr"></label>
+            <label>Заполняемость (%) <input type="number" id="occupancy" name="occupancy"></label>
+            <div class="toggle-field">
+                <label>Месячные расходы <input type="number" id="monthlyCosts" name="monthlyCosts"></label>
+                <label class="switch">
+                    <input type="checkbox" id="monthlyCostsEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-field">
+                <label>Годовые затраты на ремонт <input type="number" id="yearlyRepair" name="yearlyRepair"></label>
+                <label class="switch">
+                    <input type="checkbox" id="yearlyRepairEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-field">
+                <label>Страховка <input type="number" id="insurance" name="insurance"></label>
+                <label class="switch">
+                    <input type="checkbox" id="insuranceEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. Параметры проекта</h2>
+            <label>Лизхолд, лет <input type="number" id="leasehold" name="leasehold"></label>
+            <label>Выручка с прямых броней (%) <input type="number" id="directRevenue" name="directRevenue"></label>
+            <label>AirBnB/Booking (%) <input type="number" id="platformRevenue" name="platformRevenue"></label>
+            <label>AGR (годовой рост, %) <input type="number" id="agr" name="agr"></label>
+            <label>Рост стоимости объекта в год (%) <input type="number" id="priceGrowth" name="priceGrowth"></label>
+
+            <div id="priceStages">
+                <h3>3.1. Этапы повышения цен</h3>
+                <div class="stage">
+                    <input type="text" value="Release" class="stage-name">
+                    <input type="number" value="100" class="stage-percent">
+                    <input type="date" class="stage-date">
+                    <button type="button" class="remove-stage">Удалить</button>
+                </div>
+                <button type="button" id="addStage">Добавить</button>
+            </div>
+
+            <div>
+                <h3>3.2. Сценарии перепродажи</h3>
+                <label>Переменные расходы (%) <input type="number" id="variableCosts" name="variableCosts"></label>
+                <label>Комиссия агенту (%) <input type="number" id="agentFee" name="agentFee"></label>
+            </div>
+
+            <div>
+                <h3>3.3. Дополнительно</h3>
+                <div class="toggle-field">
+                    <label>Расчёт NPV</label>
+                    <label class="switch">
+                        <input type="checkbox" id="npvEnabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <label id="discountRateContainer" style="display:none;">Ставка дисконтирования (%) <input type="number" id="discountRate" name="discountRate"></label>
+                <div class="toggle-field">
+                    <label>Расчёт IRR</label>
+                    <label class="switch">
+                        <input type="checkbox" id="irrEnabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="demandMultiplier">
+                <h3>3.4. Повышенный спрос (помесячно)</h3>
+                <div class="toggle-field">
+                    <label>Включить</label>
+                    <label class="switch">
+                        <input type="checkbox" id="demandEnabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div id="monthlyDemand" style="display:none;">
+                    <div class="month">Январь <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Февраль <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Март <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Апрель <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Май <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Июнь <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Июль <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Август <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Сентябрь <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Октябрь <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Ноябрь <input type="number" value="1" class="month-coef"></div>
+                    <div class="month">Декабрь <input type="number" value="1" class="month-coef"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Параметры блока</h2>
+            <label>Дата завершения строительства <input type="date" id="finishDate" name="finishDate"></label>
+        </section>
+
+        <section>
+            <h2>5. Расходы</h2>
+            <div id="revenueExpenses">
+                <h3>5.1. Из выручки</h3>
+                <div class="expense-row">
+                    <input type="text" value="Комиссия OTA" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <div class="expense-row">
+                    <input type="text" value="Комиссия УК с выручки" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <div class="expense-row">
+                    <input type="text" value="Расходы на содержание" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <div class="expense-row">
+                    <input type="text" value="Налог на сдачу в аренду (юр лицо)" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <button type="button" id="addRevenueExpense">Добавить</button>
+            </div>
+
+            <div id="profitExpenses">
+                <h3>5.2. Из прибыли</h3>
+                <div class="expense-row">
+                    <input type="text" value="Маркетинг" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <div class="expense-row">
+                    <input type="text" value="Комиссия УК с прибыли" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <div class="expense-row">
+                    <input type="text" value="Налог на прибыль (физ. лицо)" class="expense-name">
+                    <input type="number" class="expense-percent">
+                    <button type="button" class="remove-expense">Удалить</button>
+                </div>
+                <button type="button" id="addProfitExpense">Добавить</button>
+            </div>
+        </section>
+    </form>
+    <script src="app.js"></script>
 </body>
 </html>
