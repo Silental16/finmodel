@@ -138,11 +138,77 @@ if (calcBtn) {
             `<p>Стоимость через 10 лет: ${price10.toFixed(2)}</p>`;
         results.appendChild(priceInfo);
 
+        const revenueExpenseNodes = document.querySelectorAll('#revenueExpenses .expense-row');
+        const revenueExpenseItems = Array.from(revenueExpenseNodes).map(row => ({
+            name: row.querySelector('.expense-name').value || '',
+            percent: parseFloat(row.querySelector('.expense-percent').value) || 0
+        }));
+
+        const profitExpenseNodes = document.querySelectorAll('#profitExpenses .expense-row');
+        const profitExpenseItems = Array.from(profitExpenseNodes).map(row => ({
+            name: row.querySelector('.expense-name').value || '',
+            percent: parseFloat(row.querySelector('.expense-percent').value) || 0
+        }));
+
+        const monthlyCostVal = parseFloat(document.getElementById('monthlyCosts').value) || 0;
+        const monthlyCostEnabled = document.getElementById('monthlyCostsEnabled').checked;
+        const yearlyRepairVal = parseFloat(document.getElementById('yearlyRepair').value) || 0;
+        const yearlyRepairEnabled = document.getElementById('yearlyRepairEnabled').checked;
+        const insuranceVal = parseFloat(document.getElementById('insurance').value) || 0;
+        const insuranceEnabled = document.getElementById('insuranceEnabled').checked;
+
+        const gross = yearly;
+        const revenueTotals = new Array(10).fill(0);
+        const profitBefore = new Array(10).fill(0);
+        const netProfit = new Array(10).fill(0);
+
+        // arrays per item
+        const revItemValues = revenueExpenseItems.map(() => new Array(10).fill(0));
+        const profitItemValues = profitExpenseItems.map(() => new Array(10).fill(0));
+
+        for (let y = 0; y < 10; y++) {
+            revenueExpenseItems.forEach((it, idx) => {
+                revItemValues[idx][y] = gross[y] * it.percent / 100;
+                revenueTotals[y] += revItemValues[idx][y];
+            });
+
+            const mc = monthlyCostEnabled ? monthlyCostVal * 12 : 0;
+            const rep = yearlyRepairEnabled ? yearlyRepairVal : 0;
+            const ins = insuranceEnabled ? insuranceVal : 0;
+
+            const beforeProfit = gross[y] - revenueTotals[y] - mc - rep - ins;
+            profitBefore[y] = beforeProfit;
+
+            profitExpenseItems.forEach((it, idx) => {
+                profitItemValues[idx][y] = beforeProfit * it.percent / 100;
+            });
+
+            const profitExpTotal = profitItemValues.reduce((sum, arr) => sum + arr[y], 0);
+            netProfit[y] = beforeProfit - profitExpTotal;
+        }
+
         const table = document.createElement('table');
-        let html = '<tr><th>Год</th><th>Валовой доход</th></tr>';
-        yearly.forEach((val, idx) => {
-            html += `<tr><td>${idx + 1}</td><td>${val.toFixed(2)}</td></tr>`;
-        });
+        let html = '<tr><th>Статья/Год</th>';
+        for (let y = 1; y <= 10; y++) html += `<th>${y}</th>`;
+        html += '</tr>';
+
+        function addRow(label, arr) {
+            html += `<tr><td>${label}</td>` + arr.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+        }
+
+        addRow('Валовой доход', gross);
+        revenueExpenseItems.forEach((it, idx) => addRow(`${it.name} (${it.percent}%)`, revItemValues[idx]));
+        addRow('Итого расходы из выручки', revenueTotals);
+        const monthlyArr = new Array(10).fill(monthlyCostEnabled ? monthlyCostVal * 12 : 0);
+        const repairArr = new Array(10).fill(yearlyRepairEnabled ? yearlyRepairVal : 0);
+        const insArr = new Array(10).fill(insuranceEnabled ? insuranceVal : 0);
+        addRow('Месячные расходы', monthlyArr);
+        addRow('Ремонт', repairArr);
+        addRow('Страховка', insArr);
+        addRow('Прибыль до расходов из прибыли', profitBefore);
+        profitExpenseItems.forEach((it, idx) => addRow(`${it.name} (${it.percent}%)`, profitItemValues[idx]));
+        addRow('Чистая прибыль', netProfit);
+
         table.innerHTML = html;
         results.appendChild(table);
     });
